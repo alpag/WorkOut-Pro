@@ -10,13 +10,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import android.support.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    private FirebaseAuth mAuth;
 
     @BindView(R.id.input_email)
     EditText _emailText;
@@ -31,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mAuth = FirebaseAuth.getInstance();
         ButterKnife.bind(this);
         
         _loginButton.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +64,13 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
+    }
+
     public void login() {
         Log.d(TAG, "Login");
 
@@ -73,7 +90,24 @@ public class LoginActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+                    }
+                });
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
@@ -111,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Login failed!", Toast.LENGTH_LONG).show();
 
         _loginButton.setEnabled(true);
     }
@@ -123,14 +157,14 @@ public class LoginActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
+            _emailText.setError("Enter a valid username");
             valid = false;
         } else {
             _emailText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+            _passwordText.setError("Password must be between 4 and 10 characters");
             valid = false;
         } else {
             _passwordText.setError(null);
@@ -138,4 +172,29 @@ public class LoginActivity extends AppCompatActivity {
 
         return valid;
     }
+
+    private void updateUI(FirebaseUser user) {
+//        hideProgressDialog();
+//        if (user != null) {
+//            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
+//                    user.getEmail(), user.isEmailVerified()));
+//            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+//
+//            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
+//            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
+//            findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
+//
+//            findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
+//        } else {
+//            mStatusTextView.setText(R.string.signed_out);
+//            mDetailTextView.setText(null);
+//
+//            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
+//            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
+//            findViewById(R.id.signedInButtons).setVisibility(View.GONE);
+//        }
+    }
+
+
+
 }
