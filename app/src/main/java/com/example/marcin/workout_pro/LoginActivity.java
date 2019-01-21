@@ -1,5 +1,4 @@
 package com.example.marcin.workout_pro;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import android.support.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -68,7 +66,8 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart(){
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        if(currentUser != null)
+            finish();
     }
 
     public void login() {
@@ -80,7 +79,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         _loginButton.setEnabled(false);
-
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
@@ -94,39 +92,34 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressDialog.dismiss();
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
+                            onLoginSuccess();
                         } else {
+                            Log.d(TAG, "onComplete: NIE UDALO SIE XD");
+                            onLoginFailed();
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                            Toast.makeText(LoginActivity.this, "Login failed",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+
                         }
                     }
                 });
-
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
                     }
                 }, 3000);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
                 this.finish();
             }
@@ -146,7 +139,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login failed!", Toast.LENGTH_LONG).show();
-
+        _passwordText.setError("Email or password are wrong.");
+        _emailText.setError("Email or password are wrong.");
         _loginButton.setEnabled(true);
     }
 
@@ -163,38 +157,12 @@ public class LoginActivity extends AppCompatActivity {
             _emailText.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("Password must be between 4 and 10 characters");
+        if (password.isEmpty() || password.length() < 6 || password.length() > 10) {
+            _passwordText.setError("Password must be between 6 and 10 characters");
             valid = false;
         } else {
             _passwordText.setError(null);
         }
-
         return valid;
     }
-
-    private void updateUI(FirebaseUser user) {
-//        hideProgressDialog();
-//        if (user != null) {
-//            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
-//                    user.getEmail(), user.isEmailVerified()));
-//            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-//
-//            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
-//            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
-//            findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
-//
-//            findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
-//        } else {
-//            mStatusTextView.setText(R.string.signed_out);
-//            mDetailTextView.setText(null);
-//
-//            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
-//            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
-//            findViewById(R.id.signedInButtons).setVisibility(View.GONE);
-//        }
-    }
-
-
-
 }
