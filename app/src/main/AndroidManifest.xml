@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.marcin.workout_pro">
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,7 +9,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,6 +24,12 @@
             android:name=".SignupActivity"
             android:parentActivityName=".LoginActivity"
             android:theme="@style/AppTheme.Dark" />
+        <activity
+            android:name=".TrainingDetails"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ConfigureTraining"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

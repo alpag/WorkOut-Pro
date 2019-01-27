@@ -7,6 +7,12 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+        <item name="android:navigationBarColor">@color/primary_dark</item>
+        <item name="android:statusBarColor">@color/primary_darker</item>
+        <item name="android:textColorPrimary">@color/oil</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_darker</item>
+        <item name="android:colorForeground">@color/white</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">

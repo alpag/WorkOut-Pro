@@ -2,15 +2,23 @@ package com.example.marcin.workout_pro;
 import java.util.ArrayList;
 
 public class Exercise {
-    private static ArrayList<Exercise> exercises = new ArrayList<Exercise>();
-    private String exerciseName;
+    private static ArrayList<Exercise> exercises;
+    private String name;
+    private String shortName;
 
     public String getName(){
-        return exerciseName;
+        return name;
     }
 
-    private Exercise(String name){
-        this.exerciseName = name;
+    @androidx.annotation.NonNull
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
+    private Exercise(String name, String shortName){
+        this.name = name;
+        this.shortName = shortName;
     }
 
     public static ArrayList<Exercise> getExercises(){
@@ -21,9 +29,10 @@ public class Exercise {
 
 
     public static void initExercises(){
-        Exercise e = new Exercise("Bench press");
+        exercises = new ArrayList<Exercise>();
+        Exercise e = new Exercise("Bench press", "BP");
         exercises.add(e);
-        Exercise e2 = new Exercise("Squat");
+        Exercise e2 = new Exercise("Squat", "SQ");
         exercises.add(e2);
 
     }
