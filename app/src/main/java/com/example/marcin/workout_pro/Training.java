@@ -1,19 +1,21 @@
 package com.example.marcin.workout_pro;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-public class Training {
+public class Training implements Serializable {
     private static ArrayList<Training> trainings = new ArrayList<>();
     private Date date;
     private ArrayList<Exercise> chosenExercises;
-    private HashMap<Exercise, Double> exerciseWeight;
+    private HashMap<Exercise, Integer> exerciseWeight;
     private HashMap<Exercise, Boolean> exerciseDone;
 
-    public Training(ArrayList<Exercise> chosenExercises){
+    public Training(ArrayList<Exercise> chosenExercises, HashMap<Exercise, Integer> chosenWeight){
         this.chosenExercises = chosenExercises;
+        this.exerciseWeight = chosenWeight;
         this.date = Calendar.getInstance().getTime();
     }
 
@@ -21,7 +23,7 @@ public class Training {
         return chosenExercises;
     }
 
-    public HashMap<Exercise, Double> getExerciseWeight(){
+    public HashMap<Exercise, Integer> getExerciseWeight(){
         return exerciseWeight;
     }
 

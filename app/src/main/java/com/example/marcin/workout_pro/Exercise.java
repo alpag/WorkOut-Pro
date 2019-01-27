@@ -1,7 +1,8 @@
 package com.example.marcin.workout_pro;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Exercise {
+public class Exercise implements Serializable {
     private static ArrayList<Exercise> exercises;
     private String name;
     private String shortName;

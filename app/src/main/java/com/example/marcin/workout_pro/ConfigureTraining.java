@@ -3,13 +3,19 @@ package com.example.marcin.workout_pro;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.thomashaertel.widget.MultiSpinner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ConfigureTraining extends AppCompatActivity {
     private static final String TAG = "ConfigureTraining";
@@ -38,11 +44,40 @@ public class ConfigureTraining extends AppCompatActivity {
 
     private MultiSpinner.MultiSpinnerListener onSelectedListener = new MultiSpinner.MultiSpinnerListener() {
         public void onItemsSelected(boolean[] selected) {
-             exercises = createExerciseSet(selected);
-
-            if(exercises.size() == 0)
+            exercises = createExerciseSet(selected);
+            if(exercises.size() == 0) {
                 Toast.makeText(ConfigureTraining.this, "You have to put any exercise", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "onItemsSelected: " + exercises.size());
+                return;
+            }
+            LinearLayout layout = findViewById(R.id.lay);
+            for (Exercise e: exercises) {
+                EditText textEdit = new EditText(getApplicationContext()); // Pass it an Activity or Context
+                textEdit.setInputType(InputType.TYPE_CLASS_NUMBER);
+                textEdit.setHint("Start weight of " + e);
+                textEdit.setId(2137 + exercises.indexOf(e));
+                layout.addView(textEdit);
+            }
+            Button confirm = new Button(getApplicationContext());
+            confirm.setText("I am ready, lets lift some weights!");
+            layout.addView(confirm);
+
+            confirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HashMap<Exercise, Integer> weights = new HashMap<>();
+                    for (Exercise e: exercises) {
+                        int index = exercises.indexOf(e) + 2137;
+                        EditText datafield = findViewById(index);
+                        weights.put(e, Integer.parseInt(datafield.getText().toString()));
+                    }
+
+                    Intent intent = new Intent(getBaseContext(), TrainingDetails.class);
+                    intent.putExtra("weights", weights);
+                    intent.putExtra("exercises", exercises);
+                    startActivity(intent);
+                    finish();
+                }
+            });
         }
     };
 
