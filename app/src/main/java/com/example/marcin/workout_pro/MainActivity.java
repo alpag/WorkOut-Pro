@@ -28,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Exercise.initExercises();
+        Training.initTrainings();
+        Training t = new Training();
+        Training.getTrainings().add(t);
         if(Training.getTrainings().isEmpty())
             TrainingDetails.STATUS_MODE = 1;
 
@@ -47,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart(){
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
+
 
     }
 

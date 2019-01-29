@@ -70,7 +70,7 @@ public class ConfigureTraining extends AppCompatActivity {
                         EditText datafield = findViewById(index);
                         weights.put(e, Integer.parseInt(datafield.getText().toString()));
                     }
-
+                    TrainingDetails.STATUS_MODE = 2;
                     Intent intent = new Intent(getBaseContext(), TrainingDetails.class);
                     intent.putExtra("weights", weights);
                     intent.putExtra("exercises", exercises);

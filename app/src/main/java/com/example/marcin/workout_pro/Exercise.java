@@ -11,7 +11,6 @@ public class Exercise implements Serializable {
         return name;
     }
 
-    @androidx.annotation.NonNull
     @Override
     public String toString() {
         return this.name;
@@ -37,4 +36,28 @@ public class Exercise implements Serializable {
         exercises.add(e2);
 
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        final Exercise other = (Exercise) obj;
+        if (this.shortName == null ? other.shortName != null : !this.shortName.equals(other.shortName))
+        {
+            return false;
+        }
+        if (this.name == null ? other.name != null : !this.name.equals(other.name))
+        {
+            return false;
+        }
+        return true;
+    }
+
 }
