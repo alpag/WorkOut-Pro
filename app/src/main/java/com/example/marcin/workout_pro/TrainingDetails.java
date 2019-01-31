@@ -1,6 +1,7 @@
 package com.example.marcin.workout_pro;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,8 +22,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.support.constraint.Constraints.TAG;
+
 public class TrainingDetails extends AppCompatActivity {
-    public static int STATUS_MODE = 1;
+    public static int STATUS_MODE;
+    public static int CONF_REQUEST = 1;
     private static final String TAG = "TrainingDetails";
 //    Statuses
 //    0 - default
@@ -31,7 +35,6 @@ public class TrainingDetails extends AppCompatActivity {
 //    3 - add training
 //    4 - preview training
 
-    private FirebaseAuth mAuth;
     private Training currentTraining;
 
     @Override
@@ -48,43 +51,41 @@ public class TrainingDetails extends AppCompatActivity {
                 exercises = (ArrayList<Exercise>) getIntent().getSerializableExtra("exercises");
                 HashMap<Exercise, Integer> exerciseWeight= new HashMap<>();
                 exerciseWeight = (HashMap<Exercise, Integer>) getIntent().getSerializableExtra("weights");
-
                 currentTraining = new Training(exercises, exerciseWeight);
                 generateUI();
                 break;
             case 3:
-                currentTraining = new Training(Training.getTrainings().get(Training.getTrainings().size()-1));
+                Training previousTraining = (Training) getIntent().getSerializableExtra("contextTraining");
+                currentTraining = new Training(previousTraining);
+                generateUI();
                 break;
             case 4:
                 currentTraining = (Training) getIntent().getSerializableExtra("contextTraining");
+                generateUI();
                 break;
         }
-
-
-
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
     @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
-        finish();
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == CONF_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                HashMap<Exercise, Integer> exerciseWeight = (HashMap<Exercise, Integer>) data.getSerializableExtra("weights");
+                ArrayList<Exercise> exercises = (ArrayList<Exercise>) data.getSerializableExtra("exercises");
+                currentTraining = new Training(exercises, exerciseWeight);
+                generateUI();
+            }
+        }
     }
 
     public void configureTraining(){
         Intent intent = new Intent(getApplicationContext(), ConfigureTraining.class);
-        startActivity(intent);
-        finish();
+        startActivityForResult(intent, CONF_REQUEST);
     }
 
     private void generateUI(){
         LinearLayout layout = findViewById(R.id.layoutTraining);
-        Log.d(TAG, "generateUI: " + layout);
-
         for (Map.Entry<Exercise, Integer> entry : currentTraining.getExerciseWeight().entrySet()) {
-            Log.d(TAG, "generateUI: " + "Key = " + entry.getKey() + ", Value = " + entry.getValue());
             generateSingleElement(layout, entry.getKey(), entry.getValue());
         }
         generateConfirmBtn(layout);
@@ -106,7 +107,6 @@ public class TrainingDetails extends AppCompatActivity {
         textEdit.setInputType(InputType.TYPE_CLASS_NUMBER);
         int index = 2137 + currentTraining.getChosenExercises().indexOf(e);
         textEdit.setId(index);
-        Log.d(TAG, "statusik ustawiono  " + index);
         textEdit.setText(weight.toString() + "kg");
         textEdit.setTextSize(20);
         RelativeLayout.LayoutParams settingsEdit = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -116,6 +116,11 @@ public class TrainingDetails extends AppCompatActivity {
 
         CheckBox isDone = new CheckBox(this);
         isDone.setId(4137 + currentTraining.getChosenExercises().indexOf(e));
+
+//        if(STATUS_MODE == 4){
+//            Log.d(TAG, "generateSingleElement: " + currentTraining.getExerciseDone().get(e));
+//            isDone.setChecked(currentTraining.getExerciseDone().get(e));
+//        }
         RelativeLayout.LayoutParams settingsCbx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         settingsCbx.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
         textEdit.setLayoutParams(settingsEdit);
@@ -146,12 +151,12 @@ public class TrainingDetails extends AppCompatActivity {
                     weights.put(e, Integer.parseInt(weight));
                     status.put(e, isDone.isChecked());
                 }
-                currentTraining.setExerciseDone(status);
-                currentTraining.setExerciseWeight(weights);
-                Training.getTrainings().add(currentTraining);
-                TrainingDetails.STATUS_MODE = 3;
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(intent);
+
+                Intent intent = new Intent();
+                intent.putExtra("status", status);
+                intent.putExtra("weight", weights);
+                intent.putExtra("exercises", currentTraining.getChosenExercises());
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });

@@ -5,13 +5,14 @@
     android:padding="10dp"
     android:layout_marginTop="15dp"
     android:background="@drawable/message"
+    android:clickable="true"
     >
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:text="Trening:      "
+        android:text="Trening z dnia "
         />
     <TextView
         android:layout_width="wrap_content"

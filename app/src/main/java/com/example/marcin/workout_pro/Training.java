@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class Training implements Serializable {
-    private static ArrayList<Training> trainings;
+    private static ArrayList<Training> trainings = new ArrayList<>();
     private Date date;
     private ArrayList<Exercise> chosenExercises;
     private HashMap<Exercise, Integer> exerciseWeight;
@@ -56,11 +56,29 @@ public class Training implements Serializable {
         return dateToReturn;
     }
 
-    public static void initTrainings(){
-        trainings = new ArrayList<>();
-
-
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        final Training other = (Training) obj;
+        if (this.exerciseDone == null ? other.exerciseDone != null : !this.exerciseDone.equals(other.exerciseDone))
+        {
+            return false;
+        }
+        if (this.date == null ? other.date != null : !this.date.equals(other.date))
+        {
+            return false;
+        }
+        return true;
     }
+
 
 
 }

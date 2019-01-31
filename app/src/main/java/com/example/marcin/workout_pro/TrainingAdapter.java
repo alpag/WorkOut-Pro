@@ -1,28 +1,37 @@
 package com.example.marcin.workout_pro;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.support.v7.widget.RecyclerView;
-
-import java.text.DateFormat;
 import java.util.ArrayList;
+
 
 public class TrainingAdapter extends RecyclerView.Adapter<TrainingAdapter.TrainingViewHolder> {
 
-    private ArrayList<Training> mTraining;
+    public ArrayList<Training> mTraining;
+    CustomTrainingClickListener listener;
 
-    public TrainingAdapter(ArrayList<Training> trainingList) {
+    public TrainingAdapter(ArrayList<Training> trainingList, CustomTrainingClickListener listener) {
         mTraining = trainingList;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public TrainingViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.training_item, viewGroup, false);
-        TrainingViewHolder rvh = new TrainingViewHolder(v);
+        final TrainingViewHolder rvh = new TrainingViewHolder(v);
+
+        v.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                listener.onItemClick(v, rvh.getAdapterPosition());
+            }
+        });
         return rvh;
     }
 
@@ -33,6 +42,7 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingAdapter.Traini
         holder.mTrainingDate.setText(String.valueOf(currentItem.getDate()));
     }
 
+
     @Override
     public int getItemCount() {
         if(mTraining == null)
@@ -40,7 +50,7 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingAdapter.Traini
         return mTraining.size();
     }
 
-    public static class TrainingViewHolder extends RecyclerView.ViewHolder {
+    public static class TrainingViewHolder extends RecyclerView.ViewHolder{
         public TextView mTrainingDate;
 
         public TrainingViewHolder(@NonNull View itemView) {

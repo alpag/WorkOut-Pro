@@ -71,10 +71,10 @@ public class ConfigureTraining extends AppCompatActivity {
                         weights.put(e, Integer.parseInt(datafield.getText().toString()));
                     }
                     TrainingDetails.STATUS_MODE = 2;
-                    Intent intent = new Intent(getBaseContext(), TrainingDetails.class);
+                    Intent intent = new Intent();
                     intent.putExtra("weights", weights);
                     intent.putExtra("exercises", exercises);
-                    startActivity(intent);
+                    setResult(RESULT_OK, intent);
                     finish();
                 }
             });
@@ -92,8 +92,6 @@ public class ConfigureTraining extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
         finish();
     }
 }
